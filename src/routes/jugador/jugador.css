@@ -1,0 +1,57 @@
+ul {
+  padding: 0;
+  margin: 0
+}
+
+ul li {
+  list-style-type: none;
+  border: solid 1px #fff;
+  border-radius: 4px;
+  margin: 16px;
+}
+
+ul li a {
+  text-decoration: none;
+  color: #fff;
+  text-transform: uppercase;
+  display: block;
+  position: relative;
+  overflow: hidden;
+  line-height: 72px;
+  padding: 8px 16px;
+  text-align: center;
+}
+
+.jugador-sprite {
+  display: block;
+  background-image: url(/assets/img/ghosts.svg);
+  background-repeat: no-repeat;
+  width: 72px;
+  height: 72px;
+  background-size: 144px 144px;
+  background-position: 0 0;
+  position: relative;
+  float: left;
+  margin-right: 16px;
+}
+
+.jugador-sprite.rojo {
+  background-position: -78px -76px;
+}
+
+.jugador-sprite.cian {
+  background-position: -78px 0px;
+}
+
+.jugador-sprite.rosa {
+  background-position: -0 -76px;
+}
+
+.jugador-sprite.naranja {
+  background-position: 0 0;
+}
+
+.jugador-sprite.pacman {
+  background-image: url(/assets/img/pacman.svg);
+  background-size: contain;
+}
