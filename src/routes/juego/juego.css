@@ -1,0 +1,57 @@
+canvas {
+  top: 0;
+  position: absolute;
+  left: 0;
+}
+
+body:-webkit-full-screen {
+  width: 100%;
+  height: 100%;
+}
+
+#fullscreen-btn,
+#exit-fullscreen-btn {
+  position: absolute;
+  bottom: 56px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+#exit-fullscreen-btn {
+  display: none;
+}
+#mobile-dir {
+  position: absolute;
+  bottom: 0px;
+  /* left: 50%;
+  transform: translateX(-50%); */
+  width: 90%;
+  height: 30vh;
+  border: solid 1px red;
+  z-index: 1000;
+}
+
+#debug {
+  position: fixed;
+  bottom: 24px;
+  padding: 16px;
+  border: solid 1px red;
+  left: 50%;
+  transform: translateX(-50%);
+  display: none;
+}
+
+
+@media screen and (min-width: 640px) {
+  canvas {
+    transform: scale(0.9);
+  }
+
+  #mobile-dir {
+    display: none;
+  }
+
+  #fullscreen-btn,
+  #exit-fullscreen-btn {
+    display: none;
+  }
+}

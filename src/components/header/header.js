@@ -3,7 +3,7 @@ import './header.css'
 
 const Header = () => (
   <div>
-    <img src="assets/img/pac-man_logo.svg" alt=""/>
+    <img src="/assets/img/pac-man_logo.svg" alt=""/>
   </div>
 )
 
