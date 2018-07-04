@@ -5,6 +5,18 @@ import './jugador.css'
 // import PropTypes from 'prop-types'
 
 export class Jugador extends React.Component {
+  componentDidMount() {
+    setTimeout(() => {
+
+      this.getAvailablePlayers();
+    }, 100)
+  }
+  getAvailablePlayers() {
+    fetch('http://192.168.0.122:8080/availablePlayers')
+    .then( response => response.json())
+    .then( json => console.log(json))
+    .catch( err => console.log(err));
+  }
   render() {
     return (
       <div>

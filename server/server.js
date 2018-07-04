@@ -40,6 +40,7 @@ const Logger = require('../src/utils/logger.js');
 const logger = new Logger({
   label: 'server'
 });
+let engine;
 
 /**
  *
@@ -49,6 +50,7 @@ const logger = new Logger({
 
 // WARNING: Use a session-store in prod or cookie.
 const session = require('express-session');
+const bodyParser = require('body-parser');
 const uuid = require('uuid');
 const express = require('express');
 const app = express();
@@ -58,6 +60,9 @@ const sessionParser = session({
   secret: 's3cr3t', // TODO: real secret
   resave: false,
 });
+
+// parse application/json
+app.use(bodyParser.json())
 
 app.use(function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
@@ -74,27 +79,49 @@ app.use(sessionParser);
 //   res.status(404).send('Sorry cant find that!');
 // });
 
-app.get('/', (req, res)=>{
+app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/index.html'), {
     root: p,
   });
+});
+
+app.get('/availablePlayers', (req, res) => {
+  res.send(engine.getAvailablePlayers());
 });
 
 app.post('/login', (req, res) => {
   //
   // "Log in" user and set userId to session.
   //
+  try {
+    engine.updateAvailablePlayers(req.body.tipo);
+  } catch(e) {
+    res.status(403);
+    res.send({
+      result: 'OK',
+      message: e.message
+    });
+  }
   const id = uuid.v4();
-
   req.session.userId = id;
   res.send({ result: 'OK', message: 'Session updated' });
   logger.info('Updated user session.', req.session.userId);
 });
 
-app.delete('/logout', (request, response) => {
-  logger.log(` Destroying user session. ${request.session.userId}`);
-  request.session.destroy();
-  response.send({ result: 'OK', message: 'Session destroyed' });
+app.post('/logout', (req, res) => {
+  logger.log(` Destroying user session. ${req.session.userId}`);
+  try {
+    engine.restoreAvailablePlayer(req.body.tipo);
+  } catch(e) {
+    res.status(403);
+    res.send({
+      result: 'OK',
+      message: e.message
+    });
+  }
+
+  req.session.destroy();
+  res.send({ result: 'OK', message: 'Session destroyed' });
 });
 
 const server = (config.protocol === 'http') ? httpMod.createServer(app) : httpMod.createServer(options, app);
@@ -166,7 +193,7 @@ process.on('message', (msg)=>{
 try {
   const ServerEngine = require('./ServerEngine.js');
   const GameEngine = require('../src/common/PacmanGameEngine.js');
-  const engine = new ServerEngine({
+  engine = new ServerEngine({
     wss: wsconnection.wss,
     gameEngine: new GameEngine({
       wss: wsconnection.wss,
@@ -175,7 +202,7 @@ try {
     }),
     updateFrequency: 30,
     // Al aumentar el ritma de actualizacion se ve mejor la discrepancia entre cliente/servidor
-    broadcastFrequency: 10
+    broadcastFrequency: 3
   });
 } catch(e) {
   console.error(e);

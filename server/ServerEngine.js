@@ -23,7 +23,7 @@ class ServerEngine {
      *
      */
     this.wss = options.wss;
-    this.wss.on('wss:connection:new', this.newConnection.bind(this));
+    this.wss.on('wss:client:playerTipo', this.newConnection.bind(this));
     this.wss.on('wss:connection:close', this.closeConnection.bind(this));
     this.wss.on('wss:connection:error', this.connectionError.bind(this));
     this.wss.on('wss:client:update', this.clientUpdate.bind(this));
@@ -46,7 +46,16 @@ class ServerEngine {
     this.playerInputQues = {};
     this.clientInput = [];
     this.stepCount = 0;
-    this.colors = ['#ff0', '#f00', '#0f0', '#00f'];
+    this.colors = {
+      'pacman': '#ff0',
+      'rojo': '#f00',
+      'cian': 'cyan',
+      'rosa': 'pink',
+      'naranja': 'orange'
+    };
+    this.last_processed_input = {};
+    this.availablePlayers = ['pacman', 'rojo', 'cian', 'rosa', 'naranja'];
+
     try {
       this.start();
     }
@@ -60,13 +69,16 @@ class ServerEngine {
    * Connections
    *
    */
-  newConnection(ws) {
+  newConnection(ws, tipo) {
     logger.log(`[engine] newConnection: ${ws.id}`);
     this.connectedPlayers[ws.id] = ws.id;
+    this.last_processed_input[ws.id] = 0;
+
     this.gameEngine.addPlayer({
-      color: this.colors[Math.floor(Math.random() * 4)],
+      color: this.colors[tipo],
       id: ws.id,
       tablero: this.gameEngine.tablero,
+      tipo: tipo
     });
     // Con ws.id le mando solo a esa conexion
     this.wss.emit('ws:send', ws.id, 'engine:playerJoined', {
@@ -129,6 +141,10 @@ class ServerEngine {
     this.clientInput.push(input);
   }
   broadcastUpdate() {
+    for(const i in this.gameEngine.state.players) {
+      this.gameEngine.state.players[i].last_processed_input = this.last_processed_input[i];
+    }
+
     this.wss.emit('ws:send', false, 'engine:gameupdate', {
       stepCount: this.stepCount,
       game: this.gameEngine.state,
@@ -142,9 +158,27 @@ class ServerEngine {
           logger.log('info', `input.stepcount: ${JSON.stringify(input.stepCount)}
           serverEngine.stepcount: ${this.stepCount}`);
           this.gameEngine.processInput(input);
+          this.last_processed_input[input.playerId] = input.update_sequence_number;
         });
       });
       this.clientInput = [];
+    }
+  }
+  getAvailablePlayers() {
+    return this.availablePlayers;
+  }
+  updateAvailablePlayers(tipo) {
+    if (this.availablePlayers.indexOf(tipo) === -1) {
+      throw 'Player anavailable';
+    } else {
+      this.availablePlayers.splice(this.availablePlayers.indexOf(tipo), 1);
+    }
+  }
+  restoreAvailablePlayer(tipo) {
+    if (this.availablePlayers.indexOf(tipo) !== -1) {
+      throw 'Player already exists';
+    } else {
+      this.availablePlayers.push(tipo);
     }
   }
 

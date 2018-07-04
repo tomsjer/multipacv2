@@ -8,9 +8,10 @@ class WsConnection {
   }
   onWsConnection(ws, req) {
     ws.id = req.sessionID;
+    ws.tipo = req.tipo;
 
     ws.on('message', message => {
-      this.onWsMessage.apply(this, [this, message]);
+      this.onWsMessage.apply(this, [ws, message]);
     });
     ws.on('close', message => {
       this.onWsClose.apply(this, [ws, message]);
@@ -19,7 +20,7 @@ class WsConnection {
       this.onWsError.apply(this, [this, message]);
     });
 
-    this.wss.emit('wss:connection:new', ws);
+    // this.wss.emit('wss:connection:new', ws);
   }
   onWsSend(wsId, event, args) {
     if(wsId) {

@@ -1,5 +1,5 @@
 canvas {
-  top: 0;
+  top: 68px;
   position: absolute;
   left: 0;
 }
@@ -7,6 +7,10 @@ canvas {
 body:-webkit-full-screen {
   width: 100%;
   height: 100%;
+}
+
+img {
+  max-width: 30vw;
 }
 
 #fullscreen-btn,
@@ -26,8 +30,9 @@ body:-webkit-full-screen {
   transform: translateX(-50%); */
   width: 90%;
   height: 30vh;
-  border: solid 1px red;
-  z-index: 1000;
+  text-align: center;
+  /* border: solid 1px red; */
+  /* z-index: 1000; */
 }
 
 #debug {
@@ -38,6 +43,7 @@ body:-webkit-full-screen {
   left: 50%;
   transform: translateX(-50%);
   display: none;
+  z-index: 200000;
 }
 
 

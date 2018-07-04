@@ -55,6 +55,7 @@ export default class ClientEngine {
     this.pending_updates = [];
 
     this.playerId = null;
+    this.playerTipo = options.playerTipo;
 
     /**
      * Game Renderer
@@ -76,6 +77,7 @@ export default class ClientEngine {
    */
   wsOnOpen(response) {
     logger.log('info', 'wsOnOpen', response);
+    this.ws.emit('ws:send:playerTipo', this.playerTipo);
   }
   wsOnClose(message) {
     logger.warn('wsOnClose', message);
@@ -94,105 +96,6 @@ export default class ClientEngine {
   playerQuit(response) {
     logger.log('playerQuit', response);
     this.gameEngine.removePlayer(response);
-  }
-  gameUpdate(update) {
-
-    if (Math.abs(this.gameEngine.stepCount - update.stepCount) > this.stepDrift ) {
-      this.gameEngine.stepCount = update.stepCount;
-    }
-
-    for(const i in update.game.players) {
-      if (i !== this.playerId) {
-        if(typeof this.gameEngine.players[i] === 'undefined') {
-          update.game.players[i].wsId = i;
-          this.gameEngine.addPlayer(update.game.players[i]);
-        }
-        else {
-          if (this.interpolarJugadores) {
-            // Add it to the position buffer.
-            var timestamp = +new Date();
-            this.gameEngine.players[i].position_buffer.push([timestamp, update.game.players[i].ubicacion]);
-          }
-          this.applyUpdate(this.gameEngine.players[i], update.game.players[i]);
-          // this.gameEngine.players[i].ubicacion.x = update.game.players[i].ubicacion.x;
-          // this.gameEngine.players[i].ubicacion.y = update.game.players[i].ubicacion.y;
-        }
-      }
-      if (i === this.playerId) {
-        this.syncPlayer(this.gameEngine.players[i], update.game.players[i], update.stepCount);
-      }
-      // if (i === this.playerId && update.game.players[i].ubicacion.x !== this.gameEngine.players[i].ubicacion.x) {
-      //   this.gameEngine.players[i].ubicacion.x = update.game.players[i].ubicacion.x;
-      // }
-      // if (i === this.playerId && update.game.players[i].ubicacion.y !== this.gameEngine.players[i].ubicacion.y) {
-      //   this.gameEngine.players[i].ubicacion.y = update.game.players[i].ubicacion.y;
-      // }
-    }
-  }
-  applyUpdate(player, data) {
-    for(const i in data) {
-      if (typeof data[i] === 'object') {
-        // por ahora solo la ubicacion es objeto
-        if (this.interpolarJugadores) {
-          this.interpolarPosicion(player)
-        } else {
-          for(const j in data[i]) {
-            player[i][j] = data[i][j];
-          }
-        }
-      } else {
-        player[i] = data[i];
-      }
-    }
-  }
-  interpolarPosicion(jugador) {
-    // Compute render timestamp.
-    var now = +new Date();
-    var render_timestamp = now - (1000.0 / 3);
-
-    // Find the two authoritative positions surrounding the rendering timestamp.
-    var buffer = jugador.position_buffer;
-
-    // Drop older positions.
-    while (buffer.length >= 2 && buffer[1][0] <= render_timestamp) {
-      buffer.shift();
-    }
-
-    // Interpolate between the two surrounding authoritative positions.
-    if (buffer.length >= 2 && buffer[0][0] <= render_timestamp && render_timestamp <= buffer[1][0]) {
-      var x0 = buffer[0][1].x;
-      var x1 = buffer[1][1].x;
-      var y0 = buffer[0][1].y;
-      var y1 = buffer[1][1].y;
-      var t0 = buffer[0][0];
-      var t1 = buffer[1][0];
-
-      jugador.ubicacion.x = x0 + (x1 - x0) * (render_timestamp - t0) / (t1 - t0);
-      jugador.ubicacion.y = y0 + (y1 - y0) * (render_timestamp - t0) / (t1 - t0);
-    }
-  }
-  syncPlayer(player, data, stepCount) {
-
-    if (data.ubicacion.x !== player.ubicacion.x) {
-      player.ubicacion.x = data.ubicacion.x;
-    }
-    if (data.ubicacion.y !== player.ubicacion.y) {
-      player.ubicacion.y = data.ubicacion.y;
-    }
-
-    let j = 0;
-    while (j < this.pending_updates.length) {
-      var input = this.pending_updates[j];
-      if (input.update_sequence_number <= data.last_processed_input) {
-        // Already processed. Its effect is already taken into account into the world update
-        // we just got, so we can drop it.
-        this.pending_updates.splice(j, 1);
-      } else {
-        // Not processed by the server yet. Re-apply it.
-        this.gameEngine.processInput(input);
-        j++;
-      }
-    }
   }
   /*
    *
@@ -222,6 +125,101 @@ export default class ClientEngine {
     this.stepCount++;
     setTimeout(this.step.bind(this), this.st);
   }
+
+  gameUpdate(update) {
+
+    if (Math.abs(this.gameEngine.stepCount - update.stepCount) > this.stepDrift ) {
+      this.gameEngine.stepCount = update.stepCount;
+    }
+
+    for(const i in update.game.players) {
+      if (i !== this.playerId) {
+        if(typeof this.gameEngine.players[i] === 'undefined') {
+          update.game.players[i].wsId = i;
+          this.gameEngine.addPlayer(update.game.players[i]);
+        }
+        else {
+          if (this.interpolarJugadores) {
+            // Add it to the position buffer.
+            var timestamp = +new Date();
+            this.gameEngine.players[i].position_buffer.push([timestamp, update.game.players[i].ubicacion]);
+          }
+          this.applyUpdate(this.gameEngine.players[i], update.game.players[i]);
+
+        }
+      }
+      if (i === this.playerId) {
+        this.syncPlayer(this.gameEngine.players[i], update.game.players[i], update.stepCount);
+      }
+    }
+  }
+  applyUpdate(player, data) {
+    for(const i in data) {
+      if (typeof data[i] === 'object') {
+        // por ahora solo la ubicacion es objeto
+        if (this.interpolarJugadores) {
+          this.interpolarPosicion(player)
+        } else {
+          for(const j in data[i]) {
+            player[i][j] = data[i][j];
+          }
+        }
+      } else {
+        player[i] = data[i];
+      }
+    }
+  }
+  interpolarPosicion(jugador) {
+    // Compute render timestamp.
+    var now = +new Date();
+    var render_timestamp = now - (1000.0 / 2);
+
+    // Find the two authoritative positions surrounding the rendering timestamp.
+    var buffer = jugador.position_buffer;
+
+    // Drop older positions.
+    while (buffer.length >= 2 && buffer[1][0] <= render_timestamp) {
+      buffer.shift();
+    }
+
+    // Interpolate between the two surrounding authoritative positions.
+    if (buffer.length >= 2 && buffer[0][0] <= render_timestamp && render_timestamp <= buffer[1][0]) {
+      var x0 = buffer[0][1].x;
+      var x1 = buffer[1][1].x;
+      var y0 = buffer[0][1].y;
+      var y1 = buffer[1][1].y;
+      var t0 = buffer[0][0];
+      var t1 = buffer[1][0];
+
+      jugador.ubicacion.x = x0 + (x1 - x0) * (render_timestamp - t0) / (t1 - t0);
+      jugador.ubicacion.y = y0 + (y1 - y0) * (render_timestamp - t0) / (t1 - t0);
+    }
+  }
+
+  // FIXME: aca tengo alto bug que hace que el movimiento sea malo
+  syncPlayer(player, data, stepCount) {
+
+    player.ubicacion.x = data.ubicacion.x;
+    player.ubicacion.y = data.ubicacion.y;
+    player.setearUbicacionGrilla(player.ubicacion);
+
+    let j = 0;
+    while (j < this.pending_updates.length) {
+      var input = this.pending_updates[j];
+      if (input.update_sequence_number <= data.last_processed_input) {
+
+        // Already processed. Its effect is already taken into account into the world update
+        // we just got, so we can drop it.
+        this.pending_updates.splice(j, 1);
+
+      } else {
+
+        // Not processed by the server yet. Re-apply it.
+        this.gameEngine.processInput(input);
+        j++;
+      }
+    }
+  }
   processInput(input) {
 
     input.playerId = this.playerId;
@@ -234,7 +232,10 @@ export default class ClientEngine {
     clientEngine.stepcount: ${this.stepCount}`);
 
     this.clientInput.push(input);
-    this.gameEngine.processInput(input);
+
+    // setTimeout(() => {
+      this.gameEngine.processInput(input);
+    // }, 50);
   }
   handlerError(error) {
     console.log(error);

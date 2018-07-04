@@ -32,6 +32,7 @@ class PacmanGameEngine extends GameEngine {
         this.players[i].position_buffer = [];
       }
     }
+
     // this.state = Object.assign(this.state, {
     //   grilla: this.tablero.estado,
     // });

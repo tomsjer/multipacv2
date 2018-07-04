@@ -22,6 +22,9 @@ export default class WsConnection extends EventEmitter {
     this.on('ws:send:input', function(message) {
       this.send('wss:client:input',message);
     });
+    this.on('ws:send:playerTipo', function(message) {
+      this.send('wss:client:playerTipo',message);
+    });
   }
   init() {
     return new Promise((resolve, reject) => {

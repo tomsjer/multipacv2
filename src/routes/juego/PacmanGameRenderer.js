@@ -14,12 +14,12 @@ export default class PacmanGameRenderer extends GameRenderer {
     this.gameEngine = options.gameEngine;
     this.tablero = this.gameEngine.tablero;
 
-    this.margen = 0;
     // Crearlo aca
     this.canvas = options.canvas.current;
+    // this.canvas.style.top = '68px';
     // Traer de afuera
-    this.canvas.width = window.innerWidth - this.margen;
-    this.canvas.height = window.innerHeight - this.margen;
+    this.canvas.width = window.innerWidth;
+    this.canvas.height = window.innerHeight - 68;
     // var w = config.estadoGrilla[0].length * celda;
     // var h = config.estadoGrilla.length * celda;
     this.ctx = this.canvas.getContext('2d');

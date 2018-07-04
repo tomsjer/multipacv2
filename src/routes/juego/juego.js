@@ -19,13 +19,21 @@ export class Juego extends React.Component {
     }
 
     this.loginOpts = {
-      method: 'POST',
-      credentials: 'same-origin',
+      method: 'post',
+      headers: {
+        'Accept': 'application/json, text/plain, */*',
+        'Content-Type': 'application/json'
+      },
+      // credentials: 'same-origin',
+      body: JSON.stringify({
+        tipo: this.props.match.params.tipo
+      })
     };
 
     this.gameEngine = new GameEngine({
       isClient: true,
       isServer: false,
+      playerVel: 4,
     });
     if (window.location.hash.indexOf('autopilot') !== -1) {
       this.controls = new RandomControls();
@@ -75,6 +83,7 @@ export class Juego extends React.Component {
           gameEngine: this.gameEngine,
           updateFrequency: 30,
           controls: this.controls,
+          playerTipo: this.props.match.params.tipo,
           gameRenderer: new GameRenderer({
             canvas: this.canvas,
             gameEngine: this.gameEngine,
@@ -108,6 +117,22 @@ export class Juego extends React.Component {
 
     return promise;
   }
+  componentWillUnmount() {
+    this.engine.ws.ws.close();
+    fetch('http://192.168.0.122:8080/logout', {
+      method: 'post',
+      headers: {
+        'Accept': 'application/json, text/plain, */*',
+        'Content-Type': 'application/json'
+      },
+      // credentials: 'same-origin',
+      body: JSON.stringify({
+        tipo: this.props.match.params.tipo
+      })
+    })
+    .then(response => response.json())
+    .catch(err => console.log(err));
+  }
   onUpdateRateChange(e) {
     this.engine.ws.send('wss:server:updateRate', { val: e.currentTarget.value });
   }
@@ -118,7 +143,6 @@ export class Juego extends React.Component {
     return (
       <div>
         <Header></Header>
-        <div>{ this.props.match.params.tipo }</div>
         <canvas ref={this.canvas}></canvas>
         <div id="mobile-dir">{this.state.dirSymbol}</div>
         <div id="debug">

@@ -24,7 +24,7 @@ class GameEngine extends EventEmitter {
   }
   start(game) {
     this.emit('gameengine:start');
-    
+
     // El cliente recibe el estado del juego
     if (this.isClient && game) {
       this.players = game.players;
@@ -56,10 +56,10 @@ class GameEngine extends EventEmitter {
   }
   processInput(input) {
     // logger.log('info', 'Processing input: ', input);
-    
-    /*----------------------------------------------------*/ 
+
+    /*----------------------------------------------------*/
     // Aca se aplican todos los cambios que estan en la cola
-    /*----------------------------------------------------*/ 
+    /*----------------------------------------------------*/
     if (this.players[input.playerId]) {
       this.players[input.playerId].emit(input.type, input.input);
     }

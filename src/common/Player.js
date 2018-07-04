@@ -70,10 +70,11 @@ class Player extends EventEmitter {
         this.aplicarMover();
       }
 
-      if (this.colisiona(this.dirActual)) {
-        // this.dirActual = this.dirFutura;
-        this.velocidad = new Vector(0, 0);
-      }
+    }
+
+    if (this.colisiona(this.dirActual)) {
+      // this.dirActual = this.dirFutura;
+      this.velocidad = new Vector(0, 0);
     }
 
     if (this.moviendo()) {
