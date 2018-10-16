@@ -5,7 +5,7 @@
   "dependencies": {
     "body-parser": "^1.18.3",
     "express": "^4.15.2",
-    "express-session": "^1.15.1",
+    "express-session": "1.15.6",
     "react": "^16.4.0",
     "react-dom": "^16.4.0",
     "react-router-dom": "^4.2.2",
@@ -15,7 +15,7 @@
     "ws": "5.2.1"
   },
   "scripts": {
-    "start":"node server/server.js",
+    "start": "node server/server.js",
     "dev": "npx nodemon --inspect server/server.js | react-scripts start;",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",

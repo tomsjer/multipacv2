@@ -30,7 +30,8 @@ export default class ClientEngine {
      *
      */
     this.ws = new WsConnection({
-      wsServer: window.location.origin.replace(/^http/, 'ws') + ':443',
+      // wsServer: window.location.origin.replace(/^http/, 'ws') + ':443',
+      wsServer: window.location.origin.replace(/^http/, 'ws'),
     });
     this.ws.on('ws:open', this.wsOnOpen.bind(this));
     this.ws.on('ws:close', this.wsOnClose.bind(this));

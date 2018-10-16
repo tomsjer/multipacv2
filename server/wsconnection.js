@@ -7,7 +7,8 @@ class WsConnection {
     this.wss.on('ws:send', this.onWsSend.bind(this));
   }
   onWsConnection(ws, req) {
-    ws.id = req.sessionID;
+    // ws.id = req.sessionID;
+    ws.id = req.session.userId;
     ws.tipo = req.tipo;
 
     ws.on('message', message => {
