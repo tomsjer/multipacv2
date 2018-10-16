@@ -1,4 +1,4 @@
-import celdaSprite from './CeldaSprite'
+import celdaSprite from './CeldaSprite.js'
 // Hacer global
 const MOUSE = {
   x: 0,
@@ -49,6 +49,8 @@ export default class TableroVista {
     this.grillaFondo = this.setGrillaFondo.bind(this)(this.modelo.filas, this.modelo.columnas);
     this.grillaJuego = this.setGrillaJuego.bind(this)(this.modelo.filas, this.modelo.columnas);
 
+    console.log(this.grillaJuego);
+
     this.dibujarFondo();
 
     window.addEventListener('resize', this.handleResize.bind(this), false);
@@ -60,17 +62,21 @@ export default class TableroVista {
     this.fondoCtx.strokeStyle = this.colorBorde;
     this.fondoCtx.lineWidth = this.lineWidth;
     // Sprite por celda
-    this.grillaFondo.forEach(cols => {
-      cols.forEach(celda => {
-        this.fondoCtx.save();
-        this.fondoCtx.translate(
-          celda.x - this.anchoCelda / 2,
-          celda.y - this.altoCelda / 2
-          // celda.x,
-          // celda.y
-        );
-        celdaSprite(celda, this.fondoCtx);
-        this.fondoCtx.restore();
+    this.grillaFondo.forEach((cols, j) => {
+      cols.forEach((celda, i) => {
+        setTimeout(()=>{
+          setTimeout(()=>{
+            this.fondoCtx.save();
+            this.fondoCtx.translate(
+              celda.x - this.anchoCelda / 2,
+              celda.y - this.altoCelda / 2
+              // celda.x,
+              // celda.y
+            );
+            celdaSprite(celda, this.fondoCtx);
+            this.fondoCtx.restore();
+          }, 10 * i)
+        }, 5 * j)
       });
     });
   }
@@ -104,17 +110,17 @@ export default class TableroVista {
         }
 
         // debug
-        const dx = Math.abs(MOUSE.x - celda.x);
-        const dy = Math.abs(MOUSE.y - celda.y);
-        if ( dx < celda.w - 10 && dy < celda.h - 10) {
-          const d = Math.abs(dx + dy);
-          const o = map(d, 0, celda.w, 1, 0);
-          // console.log(d, o);
-          this.ctx.strokeStyle = `rgba(255,0,0,${ o }) `;
-          this.ctx.strokeRect(0, 0, this.anchoCelda , this.altoCelda );
-          // this.ctx.strokeRect(this.anchoCelda / 4, this.altoCelda / 4, this.anchoCelda / 2, this.altoCelda / 2);
-          console.log(celda);
-        }
+        // const dx = Math.abs(MOUSE.x - celda.x);
+        // const dy = Math.abs(MOUSE.y - celda.y);
+        // if ( dx < celda.w - 10 && dy < celda.h - 10) {
+        //   const d = Math.abs(dx + dy);
+        //   const o = map(d, 0, celda.w, 1, 0);
+        //   // console.log(d, o);
+        //   this.ctx.strokeStyle = `rgba(255,0,0,${ o }) `;
+        //   this.ctx.strokeRect(0, 0, this.anchoCelda , this.altoCelda );
+        //   // this.ctx.strokeRect(this.anchoCelda / 4, this.altoCelda / 4, this.anchoCelda / 2, this.altoCelda / 2);
+        //   console.log(celda);
+        // }
         // this.ctx.strokeStyle = this.colorBorde;
         // this.ctx.strokeRect(0, 0, this.anchoCelda,this.altoCelda);
         this.ctx.restore();
@@ -136,7 +142,7 @@ export default class TableroVista {
 
       for (let j = 0; j < _c; j++) {
         const x = (j * this.anchoCelda + this.anchoCelda / 2) | 0; // (this.ancho / _f) * j + this.anchoCelda/2;
-        if (condicion(this.modelo.estadoGrilla[i][j])) {
+        //if (condicion(this.modelo.estadoGrilla[i][j])) {
           c.push({
             x: x,
             y: y,
@@ -146,13 +152,16 @@ export default class TableroVista {
             h: this.altoCelda,
             estado: this.modelo.estadoGrilla[i][j]
           });
-        }
+        //}
       }
 
       f.push(c);
     }
 
     return f;
+  }
+  celdaComida(j, i) {
+    this.grillaJuego[j][i].estado = 0;
   }
   getGrilla() {
     return this.grilla;

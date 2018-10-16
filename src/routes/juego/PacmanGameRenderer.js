@@ -61,7 +61,7 @@ export default class PacmanGameRenderer extends GameRenderer {
       radioComida: window.innerWidth < 600 ? 4.0 : 4.0,
       radioBola: window.innerWidth < 600 ? 8.0 : 8.0,
       colorPared: '',
-      colorBorde: '',
+      colorBorde: '#0ff',
       colorComida: '#995',
       colorBola: '#ff7',
       frameCount: this.frameCount,

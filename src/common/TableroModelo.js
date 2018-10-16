@@ -12,9 +12,9 @@ class TableroModelo {
   }
   /**
    * Si la celda esta ocupada con algo que no sea vacio o comida
-   * @param  {Number} j 
-   * @param  {Number} i 
-   * @return {Boolean}   
+   * @param  {Number} j
+   * @param  {Number} i
+   * @return {Boolean}
    */
   celdaOcupada(j, i) {
     return this.estadoGrilla[j][i] !== 0 && this.estadoGrilla[j][i] !== 2 && this.estadoGrilla[j][i] !== 3;

@@ -26,6 +26,10 @@ class TableroControlador {
 
   comer(j, i) {
     this.modelo.celdaComida(j, i);
+
+    if (this.vista) {
+      this.vista.celdaComida(j, i);
+    }
   }
 
   get anchoCelda() {

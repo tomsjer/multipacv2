@@ -16,7 +16,8 @@ class Player extends EventEmitter {
     this.estado = 'init'; // TODO: usar contantes ej.: PLAYER_INIT definido en contantes.js
     this.tablero = opciones.tablero;
     this.celda = this.tablero.anchoCelda;
-    this.toBroadCast = opciones.toBroadCast || ['id', 'ubicacion', 'dirActual', 'dirFutura', 'color'];
+    this.tipo = opciones.tipo;
+    this.toBroadCast = opciones.toBroadCast || ['id', 'ubicacion', 'dirActual', 'dirFutura', 'color', 'tipo'];
 
     this.dirActual = 'IZQUIERDA';
     this.dirFutura = undefined;
@@ -236,7 +237,7 @@ class Player extends EventEmitter {
     });
     return data;
   }
-  // FIXME: solo deberia estar en PlayerVista
+  // FIXME: solo deberia estar en PlayerVista para c/tipo de jugador
   dibujar(canvas, ctx) {
     // const x = map(this.posX() - 10, 0, this.tablero.ancho, 0, canvas.width);
     // const y = map(this.posY() - 10, 0, this.tablero.alto, 0, canvas.height);

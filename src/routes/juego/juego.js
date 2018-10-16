@@ -105,7 +105,7 @@ export class Juego extends React.Component {
   */
   login(opts) {
     const promise = new Promise((resolve, reject)=>{
-      fetch('http://192.168.0.122:8080/login', opts)
+      fetch('/login', opts)
       .then((response)=>{
         return response.json().then((json) => resolve(json));
       })
@@ -119,7 +119,7 @@ export class Juego extends React.Component {
   }
   componentWillUnmount() {
     this.engine.ws.ws.close();
-    fetch('http://192.168.0.122:8080/logout', {
+    fetch('/logout', {
       method: 'post',
       headers: {
         'Accept': 'application/json, text/plain, */*',

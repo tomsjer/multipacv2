@@ -15,7 +15,8 @@
     "ws": "^5.1.1"
   },
   "scripts": {
-    "start": "npx nodemon --inspect server/server.js | react-scripts start;",
+    "start":"node server/server.js",
+    "dev": "npx nodemon --inspect server/server.js | react-scripts start;",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject"
@@ -25,7 +26,6 @@
     "eslint-plugin-react": "^7.9.1",
     "nodemon": "^1.17.5"
   },
-  "homepage": "http://multipac.man",
   "author": "tomsjer",
   "license": "ISC",
   "engines": {

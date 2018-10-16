@@ -86,11 +86,13 @@ class ServerEngine {
       stepCount: this.stepCount,
       game: this.gameEngine.state,
       color: this.colors[Math.floor(Math.random() * 4)],
+      tipo: tipo
     });
     // Sin id le mando a todas las conexiones
     this.wss.emit('ws:send', ws.id, 'engine:newConnection', {
       id: ws.id,
       game: this.gameEngine.state,
+      tipo: tipo
     });
 
   }

@@ -70,7 +70,7 @@ app.use(function(req, res, next) {
   next();
 });
 
-const p = path.join(__dirname, '../public');
+const p = path.join(__dirname, '../build');
 console.log(p);
 app.use(express.static(p));
 app.use(sessionParser);
@@ -80,7 +80,7 @@ app.use(sessionParser);
 // });
 
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, '../public/index.html'), {
+  res.sendFile(path.join(__dirname, '../build/index.html'), {
     root: p,
   });
 });
@@ -124,8 +124,10 @@ app.post('/logout', (req, res) => {
   res.send({ result: 'OK', message: 'Session destroyed' });
 });
 
-const server = (config.protocol === 'http') ? httpMod.createServer(app) : httpMod.createServer(options, app);
-if (process.env.PORT) {
+// const server = (config.protocol === 'http') ? httpMod.createServer(app) : httpMod.createServer(options, app);
+const server = httpMod.createServer(app);
+// if (process.env.PORT) {
+if (true) {
   server.listen(port, function listening() {
     logger.info(`\n______________________________________________________\n\n ${config.protocol}://${server.address().address}:${server.address().port}...\n______________________________________________________\n`);
     if(typeof process.send !== 'undefined') {

@@ -7,6 +7,8 @@ const GameEngine = require('./GameEngine');
 const TableroControlador = require('../common/TableroControlador.js');
 const estadoGrilla = require('./estadoGrilla.js'); // Traer de db
 const Player = require('./Player');
+const PacmanPlayer = require('./PacmanPlayer.js');
+const GhostPlayer = require('./GhostPlayer.js');
 
 class PacmanGameEngine extends GameEngine {
   constructor(options) {
@@ -28,7 +30,7 @@ class PacmanGameEngine extends GameEngine {
         // Strategy p diff tipo jugador?
         game.players[i].id = i;
         game.players[i].tablero = this.tablero;
-        this.players[i] = new Player(game.players[i]);
+        this.players[i] = game.players[i].tipo === 'pacman' ? new PacmanPlayer(game.players[i]) : new GhostPlayer(game.players[i]);
         this.players[i].position_buffer = [];
       }
     }
@@ -50,7 +52,7 @@ class PacmanGameEngine extends GameEngine {
     if (!opts.tablero) {
       opts.tablero = this.tablero;
     }
-    this.players[opts.id] = new Player(opts);
+    this.players[opts.id] = opts.tipo === 'pacman' ? new PacmanPlayer(opts) : new GhostPlayer(opts);;
     this.players[opts.id].position_buffer = [];
     this.state.players = this.getPlayers();
     logger.log(`addPlayer ${opts.id}`);

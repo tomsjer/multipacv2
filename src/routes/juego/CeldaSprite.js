@@ -311,9 +311,9 @@ export default function celdaSprite(celda, ctx) {
     ctx.stroke();
     break;
   default:
-    console.log(celda);
-    ctx.strokeStyle = '#222';
-    ctx.strokeRect(0,0, celda.w, celda.h);
+    // console.log(celda);
+    // ctx.strokeStyle = '#222';
+    // ctx.strokeRect(0,0, celda.w, celda.h);
     break;
   }
 }
