@@ -99,6 +99,7 @@ class ServerEngine {
   closeConnection(ws, code, message) {
     logger.log(`[engine] closeConnection: ${ws.id}\n code: ${code}\n message: ${message}`);
     delete this.connectedPlayers[ws.id];
+    this.restoreAvailablePlayer(this.gameEngine.players[ws.id].tipo);
     this.gameEngine.removePlayer(ws);
     this.wss.emit('ws:send', null, 'engine:playerQuit', {
       id: ws.id,
