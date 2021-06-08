@@ -28,8 +28,4 @@
   },
   "author": "tomsjer",
   "license": "ISC",
-  "engines": {
-    "node": "8.11.1",
-    "npm": "6.0.1"
-  }
 }
